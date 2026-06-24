@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
     <title>Pilsener tweets</title>
+
     <style>
         * {
             margin: 0;
@@ -11,79 +12,215 @@
             box-sizing: border-box;
             user-select: none;
         }
-        
+
         @font-face {
             font-family: "Pilsener Font";
             src: url("./font/pilsener-font.ttf");
         }
 
         html, body {
-            height: 100%;
             width: 100%;
+            height: 100%;
             overflow: hidden;
-            background-color: #000;
+            background: #000;
         }
 
         body {
-            font-family: "Pilsener Font";
-            color: white;
+            font-family: "Pilsener Font", sans-serif;
+            color: #fff;
         }
 
-        /* HIGHLIGHT: Container for the background image */
-        #background-img {
-            position: absolute;
-            top: 0;
-            left: 0;
+        #main-container {
             width: 100%;
             height: 100%;
+            position: relative;
+        }
+
+        #background-img {
+            position: absolute;
+            inset: 0;
+            background-image: url('./img/art.webp');
             background-size: cover;
             background-position: center;
             z-index: 0;
-            background-image: url('./img/art.webp');
         }
 
         #tweet-container {
             position: absolute;
             z-index: 3;
-            width: 100%;
+            overflow: hidden;
         }
 
-        /* Specific CSS for Horizontal Screen (768x320) */
+        #tweet-content {
+            width: 100%;
+            height: 100%;
+
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+
+            line-height: 1;
+            overflow: hidden;
+        }
+
+        #tweet-text,
+        #tweet-user {
+            display: block;
+        }
+
+        #tweet-user {
+            margin-top: 6px;
+        }
+
+        /* 768x320 */
+
         @media (width: 768px) and (height: 320px) {
             #tweet-container {
-                top: 12%;
-                left: 27%;
+                top: 25%;
+                left: 2%;
+
+                width: 360px;
+                height: 140px;
+
+                background-color: rgba(255,128,0,.5);
             }
         }
 
-        /* Specific CSS for Vertical Screen (600x800) */
+        /* 600x800 */
+
         @media (width: 600px) and (height: 800px) {
             #tweet-container {
                 top: 60%;
                 left: 22%;
+
+                width: 330px;
+                height: 180px;
+
+                background-color: rgba(255,128,0,.5);
             }
         }
-        /* Fallback for other sizes (Responsive) */
+
+        /* fallback */
+
         @media not all and (width: 768px) and (height: 320px) {
             @media not all and (width: 600px) and (height: 800px) {
                 #tweet-container {
                     top: 12%;
                     left: 28%;
+
+                    width: 360px;
+                    height: 140px;
+
+                    background-color: rgba(255,128,0,.5);
                 }
             }
         }
     </style>
 </head>
+
 <body>
+
 <div id="main-container">
+
     <div id="background-img"></div>
+
     <div id="tweet-container">
-        
+        <div id="tweet-content">
+
+            <span id="tweet-text">
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc scelerisque lorem eget. Donec euismod, nisl eget consectetur.
+            </span>
+
+            <span id="tweet-user">
+                - Digger
+            </span>
+
+        </div>
     </div>
+
 </div>
 
 <script>
+function fitTweetText() {
+    const container = document.getElementById('tweet-container');
+    const content = document.getElementById('tweet-content');
 
+    if (!container || !content) return;
+
+    let low = 8;
+    let high = 150;
+    let best = 8;
+
+    while (low <= high) {
+        const mid = Math.floor((low + high) / 2);
+
+        content.style.fontSize = mid + 'px';
+
+        const fits =
+            content.scrollWidth <= container.clientWidth &&
+            content.scrollHeight <= container.clientHeight;
+
+        if (fits) {
+            best = mid;
+            low = mid + 1;
+        } else {
+            high = mid - 1;
+        }
+    }
+
+    content.style.fontSize = best + 'px';
+}
+
+async function init() {
+    if (document.fonts) {
+        await document.fonts.ready;
+    }
+
+    fitTweetText();
+}
+
+init();
+
+window.addEventListener('resize', fitTweetText);
+
+/*
+function updateBackground() {
+    const bg = document.getElementById('background-img');
+
+    const params = new URLSearchParams(window.location.search);
+
+    const widthParam = params.get('width');
+    const heightParam = params.get('height');
+
+    const width = widthParam
+        ? parseInt(widthParam)
+        : window.innerWidth;
+
+    const height = heightParam
+        ? parseInt(heightParam)
+        : window.innerHeight;
+
+    let imgSrc = "";
+
+    if (width === 768 && height === 320) {
+        imgSrc = "./img/horizontal.png";
+    }
+    else if (width === 600 && height === 800) {
+        imgSrc = "./img/vertical.png";
+    }
+    else {
+        imgSrc = (height > width)
+            ? "./img/vertical.png"
+            : "./img/horizontal.png";
+    }
+
+    bg.style.backgroundImage = `url('${imgSrc}')`;
+}
+
+updateBackground();
+window.addEventListener('resize', updateBackground);
+*/
 </script>
+
 </body>
 </html>
