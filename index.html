@@ -176,7 +176,9 @@ init();
 
 window.addEventListener('resize', fitTweetText);
 
-const DISPLAY_CODE = 'D3001'
+// ?displayCode=D3001
+const params = new URLSearchParams(window.location.search);
+const DISPLAY_CODE = params.get("displayCode")
 const tweetTextEl = document.getElementById("tweet-text")
 
 function isNotExpired(dateStr) {
