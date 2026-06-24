@@ -103,8 +103,6 @@
 
                     width: 360px;
                     height: 140px;
-
-                    background-color: rgba(255,128,0,.5);
                 }
             }
         }
@@ -163,16 +161,6 @@ function fitTweetText() {
 
     content.style.fontSize = best + 'px';
 }
-
-async function init() {
-    if (document.fonts) {
-        await document.fonts.ready;
-    }
-
-    fitTweetText();
-}
-
-init();
 
 window.addEventListener('resize', fitTweetText);
 
