@@ -121,7 +121,7 @@
         <div id="tweet-content">
 
             <span id="tweet-text">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc scelerisque lorem eget. Donec euismod, nisl eget consectetur.
+            
             </span>
 
             <!--<span id="tweet-user">
@@ -176,7 +176,7 @@ init();
 
 window.addEventListener('resize', fitTweetText);
 
-// ?displayCode=D3001
+// ?displayCode=D2201
 const params = new URLSearchParams(window.location.search);
 const DISPLAY_CODE = params.get("displayCode")
 const tweetTextEl = document.getElementById("tweet-text")
@@ -216,8 +216,6 @@ function chooseTweetToDisplay(filteredArr) {
     ["AON", 3],
   ]);
 
-  console.log(filteredArr)
-
   const highestPriority = Math.min(
     ...filteredArr.map(
       tweet => priorityMap.get(tweet["Tipo de ad"]) ?? Infinity
@@ -236,14 +234,18 @@ function chooseTweetToDisplay(filteredArr) {
 
 async function loadTweets() {
     try {
-      const response = await fetch(`http://localhost:7777/?displayCode=${DISPLAY_CODE}`);
+      const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
+      // const response = await fetch(`http://localhost:7777/`); // dev
       const { data: rawData } = await response.json();
-
+      
       const data = filterDisplayData(rawData)
 
       const tweetToDisplay = chooseTweetToDisplay(data);
 
       tweetTextEl.innerText = tweetToDisplay["Texto"]
+      requestAnimationFrame(() => {
+        fitTweetText();
+      });
     } catch (err) {
       console.error(err);
     }
