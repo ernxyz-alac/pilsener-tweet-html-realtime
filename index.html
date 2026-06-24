@@ -73,7 +73,6 @@
         }
 
         /* 768x320 */
-
         @media (width: 768px) and (height: 320px) {
             #tweet-container {
                 top: 25%;
@@ -81,13 +80,10 @@
 
                 width: 360px;
                 height: 140px;
-
-                background-color: rgba(255,128,0,.5);
             }
         }
 
         /* 600x800 */
-
         @media (width: 600px) and (height: 800px) {
             #tweet-container {
                 top: 60%;
@@ -95,13 +91,10 @@
 
                 width: 330px;
                 height: 180px;
-
-                background-color: rgba(255,128,0,.5);
             }
         }
 
         /* fallback */
-
         @media not all and (width: 768px) and (height: 320px) {
             @media not all and (width: 600px) and (height: 800px) {
                 #tweet-container {
@@ -131,9 +124,9 @@
                 Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nunc scelerisque lorem eget. Donec euismod, nisl eget consectetur.
             </span>
 
-            <span id="tweet-user">
+            <!--<span id="tweet-user">
                 - Digger
-            </span>
+            </span>-->
 
         </div>
     </div>
@@ -182,6 +175,79 @@ async function init() {
 init();
 
 window.addEventListener('resize', fitTweetText);
+
+const DISPLAY_CODE = 'D3001'
+const tweetTextEl = document.getElementById("tweet-text")
+
+function isNotExpired(dateStr) {
+    const [day, month, year] = dateStr.split('/').map(Number);
+
+    const deadline = new Date(
+        year,
+        month - 1,
+        day,
+        23, 59, 59, 999
+    );
+
+    return Date.now() < deadline.getTime();
+}
+
+function extractAdType(tweet) {
+  return tweet["Tipo de ad"]
+}
+
+function filterDisplayData (arr) {
+  const today = new Date()
+  
+  return arr.filter(it => (
+    // deadline, status, displayCode
+    it["Elemento Vía Pública"] === DISPLAY_CODE
+    && (it["Estatus"] === true || it["Estatus"] === 1 || it["Estatus"] === "TRUE" || it["Estatus"] === "true" || it["Estatus"] === "1")
+    && isNotExpired(it["Deadline"])
+  ))
+}
+
+function chooseTweetToDisplay(filteredArr) {
+  const priorityMap = new Map([
+    ["Reactivo", 1],
+    ["Especial", 2],
+    ["AON", 3],
+  ]);
+
+  console.log(filteredArr)
+
+  const highestPriority = Math.min(
+    ...filteredArr.map(
+      tweet => priorityMap.get(tweet["Tipo de ad"]) ?? Infinity
+    )
+  );
+
+  const candidates = filteredArr.filter(
+    tweet =>
+      (priorityMap.get(tweet["Tipo de ad"]) ?? Infinity) === highestPriority
+  );
+
+  return candidates[
+    Math.floor(Math.random() * candidates.length)
+  ];
+}
+
+async function loadTweets() {
+    try {
+      const response = await fetch(`http://localhost:7777/?displayCode=${DISPLAY_CODE}`);
+      const { data: rawData } = await response.json();
+
+      const data = filterDisplayData(rawData)
+
+      const tweetToDisplay = chooseTweetToDisplay(data);
+
+      tweetTextEl.innerText = tweetToDisplay["Texto"]
+    } catch (err) {
+      console.error(err);
+    }
+}
+
+loadTweets();
 
 /*
 function updateBackground() {
