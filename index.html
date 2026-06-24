@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Pilsener tweets</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            user-select: none;
+        }
+        
+        @font-face {
+            font-family: "Pilsener Font";
+            src: url("./font/pilsener-font.ttf");
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+            overflow: hidden;
+            background-color: #000;
+        }
+
+        body {
+            font-family: "Pilsener Font";
+            color: white;
+        }
+
+        /* HIGHLIGHT: Container for the background image */
+        #background-img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-size: cover;
+            background-position: center;
+            z-index: 0;
+            background-image: url('./img/art.webp');
+        }
+
+        #tweet-container {
+            position: absolute;
+            z-index: 3;
+            width: 100%;
+        }
+
+        /* Specific CSS for Horizontal Screen (768x320) */
+        @media (width: 768px) and (height: 320px) {
+            #tweet-container {
+                top: 12%;
+                left: 27%;
+            }
+        }
+
+        /* Specific CSS for Vertical Screen (600x800) */
+        @media (width: 600px) and (height: 800px) {
+            #tweet-container {
+                top: 60%;
+                left: 22%;
+            }
+        }
+        /* Fallback for other sizes (Responsive) */
+        @media not all and (width: 768px) and (height: 320px) {
+            @media not all and (width: 600px) and (height: 800px) {
+                #tweet-container {
+                    top: 12%;
+                    left: 28%;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="main-container">
+    <div id="background-img"></div>
+    <div id="tweet-container">
+        
+    </div>
+</div>
+
+<script>
+
+</script>
+</body>
+</html>
