@@ -6,6 +6,7 @@
     <title>Pilsener tweets</title>
 
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Libre+Franklin:ital,wght@0,100..900;1,100..900&display=swap');
         * {
             margin: 0;
             padding: 0;
@@ -13,21 +14,17 @@
             user-select: none;
         }
 
-        @font-face {
-            font-family: "Pilsener Font";
-            src: url("./font/pilsener-font.ttf");
-        }
-
         html, body {
             width: 100%;
             height: 100%;
             overflow: hidden;
-            background: #000;
+            background: #fff;
         }
 
         body {
-            font-family: "Pilsener Font", sans-serif;
+            font-family: "Libre Franklin", sans-serif;
             color: #fff;
+            padding: 12px;
         }
 
         #main-container {
@@ -59,8 +56,18 @@
             flex-direction: column;
             justify-content: center;
 
-            line-height: 1;
             overflow: hidden;
+        }
+
+        #tweet-text {
+            line-height: 1.1;
+            white-space: pre-wrap;
+            word-break: break-word;
+            margin: 5px 0;
+        }
+
+        #tweet-text, #tweet-date {
+            font-weight: 600;
         }
 
         #tweet-text,
@@ -72,14 +79,59 @@
             margin-top: 6px;
         }
 
+        #tweet-display-name {
+            font-weight: 600;
+        }
+        #tweet-username, #tweet-date {
+            color: gray;
+        }
+
         /* 768x320 */
         @media (width: 768px) and (height: 320px) {
             #tweet-container {
-                top: 25%;
-                left: 2%;
+                top: 22%;
+                left: 2.5%;
 
-                width: 360px;
-                height: 140px;
+                width: 350px;
+                height: 145px;
+
+                background-color: white;
+                color: black;
+                padding: 5px 10px;
+
+                box-shadow:
+                    inset -8px -8px 10px -8px rgba(0,0,0,.35);
+            }
+
+            #tweet-profile-container {
+                display: flex;
+            }
+            #tweet-user-profile {
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+
+                position: relative;
+                top: 0;
+                left: 0;
+            }
+            #tweet-profile-names {
+                margin-left: 5px;
+                display: flex;
+                flex-direction: column;
+            }
+            #tweet-display-name {
+                font-size: 14px;
+            }
+            #tweet-user-verified {
+                width: 12px;
+                height: 12px;
+            }
+            #tweet-username {
+                font-size: 12px;
+            }
+            #tweet-date {
+                font-size: 15px;
             }
         }
 
@@ -117,15 +169,21 @@
 
     <div id="tweet-container">
         <div id="tweet-content">
+            <div id="tweet-profile-container">
+                <img id="tweet-user-profile" />
 
-            <span id="tweet-text">
-            
-            </span>
+                <div id="tweet-profile-names">
+                    <div>
+                        <span id="tweet-display-name"></span>
+                        <img id="tweet-user-verified" />
+                    </div>
+                    <span id="tweet-username"></span>
+                </div>
+            </div>
 
-            <!--<span id="tweet-user">
-                - Digger
-            </span>-->
+            <span id="tweet-text"></span>
 
+            <span id="tweet-date"></span>
         </div>
     </div>
 
@@ -135,8 +193,21 @@
 function fitTweetText() {
     const container = document.getElementById('tweet-container');
     const content = document.getElementById('tweet-content');
+    const tweetText = document.getElementById('tweet-text');
 
-    if (!container || !content) return;
+    if (!container || !content || !tweetText) return;
+
+    const styles = getComputedStyle(container);
+
+    const availableWidth =
+        container.clientWidth
+        - parseFloat(styles.paddingLeft)
+        - parseFloat(styles.paddingRight);
+
+    const availableHeight =
+        container.clientHeight
+        - parseFloat(styles.paddingTop)
+        - parseFloat(styles.paddingBottom);
 
     let low = 8;
     let high = 150;
@@ -145,11 +216,11 @@ function fitTweetText() {
     while (low <= high) {
         const mid = Math.floor((low + high) / 2);
 
-        content.style.fontSize = mid + 'px';
+        tweetText.style.fontSize = mid + 'px';
 
         const fits =
-            content.scrollWidth <= container.clientWidth &&
-            content.scrollHeight <= container.clientHeight;
+            content.scrollWidth <= availableWidth &&
+            content.scrollHeight <= availableHeight;
 
         if (fits) {
             best = mid;
@@ -159,15 +230,20 @@ function fitTweetText() {
         }
     }
 
-    content.style.fontSize = best + 'px';
+    tweetText.style.fontSize = best + 'px';
 }
 
 window.addEventListener('resize', fitTweetText);
 
-// ?displayCode=D2201
+// ?displayCode=D1001
 const params = new URLSearchParams(window.location.search);
 const DISPLAY_CODE = params.get("displayCode")
 const tweetTextEl = document.getElementById("tweet-text")
+const tweetProfilePicEl = document.getElementById("tweet-user-profile")
+const tweetDisplayNameEl = document.getElementById("tweet-display-name")
+const tweetUsernameEl = document.getElementById("tweet-username")
+const tweetDateEl = document.getElementById("tweet-date")
+const tweetVerifiedEl = document.getElementById("tweet-user-verified")
 
 function isNotExpired(dateStr) {
     const [day, month, year] = dateStr.split('/').map(Number);
@@ -222,15 +298,30 @@ function chooseTweetToDisplay(filteredArr) {
 
 async function loadTweets() {
     try {
-      const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
-      // const response = await fetch(`http://localhost:7777/`); // dev
+      // const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
+      const response = await fetch(`http://localhost:7777/`); // dev
       const { data: rawData } = await response.json();
       
       const data = filterDisplayData(rawData)
 
       const tweetToDisplay = chooseTweetToDisplay(data);
 
+      console.log(tweetToDisplay)
+
       tweetTextEl.innerText = tweetToDisplay["Texto"]
+      tweetProfilePicEl.src = tweetToDisplay["Url Foto de Perfil Usuario"]
+      tweetDisplayNameEl.innerText = tweetToDisplay["Publicado por"]
+      tweetUsernameEl.innerText = `@${tweetToDisplay["Nombre de Usuario"]}`
+      tweetDateEl.innerText = tweetToDisplay["Fecha de Publicación"]
+      tweetVerifiedEl.src = 
+        tweetToDisplay["Perfil verificado"] === 1
+        || tweetToDisplay["Perfil verificado"] === "1"
+        || tweetToDisplay["Perfil verificado"] === "true"
+        || tweetToDisplay["Perfil verificado"] === "TRUE"
+        || tweetToDisplay["Perfil verificado"] === true
+        ? './img/v-icon.png'
+        : ''
+      
       requestAnimationFrame(() => {
         fitTweetText();
       });
