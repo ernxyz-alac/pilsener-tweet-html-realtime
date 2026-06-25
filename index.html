@@ -79,36 +79,20 @@
                 color: black;
                 padding: 5px 10px;
             }
+        }
 
-            #tweet-profile-container {
-                display: flex;
-            }
-            #tweet-user-profile {
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
+        /* 1920x768 */
+        @media (width: 1920px) and (height: 768px) {
+            #tweet-container {
+                position: absolute;
+                top: 39%;
+                left: 9.8%;
 
-                position: relative;
-                top: 0;
-                left: 0;
-            }
-            #tweet-profile-names {
-                margin-left: 5px;
-                display: flex;
-                flex-direction: column;
-            }
-            #tweet-display-name {
-                font-size: 14px;
-            }
-            #tweet-user-verified {
-                width: 12px;
-                height: 12px;
-            }
-            #tweet-username {
-                font-size: 12px;
-            }
-            #tweet-date {
-                font-size: 15px;
+                width: 750px;
+                height: 180px;
+
+                /*background-color: rgba(255, 128, 0, .5);*/
+                color: black;
             }
         }
 
@@ -124,7 +108,7 @@
         }
 
         /* fallback */
-        @media not all and (width: 768px) and (height: 320px) {
+        /*@media not all and (width: 768px) and (height: 320px) {
             @media not all and (width: 600px) and (height: 800px) {
                 #tweet-container {
                     top: 12%;
@@ -134,7 +118,7 @@
                     height: 140px;
                 }
             }
-        }
+        }*/
     </style>
 </head>
 
