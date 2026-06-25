@@ -24,7 +24,6 @@
         body {
             font-family: "Libre Franklin", sans-serif;
             color: #fff;
-            padding: 12px;
         }
 
         #main-container {
@@ -36,7 +35,7 @@
         #background-img {
             position: absolute;
             inset: 0;
-            background-image: url('./img/art.webp');
+            background-image: url('./img/empty-art.png');
             background-size: cover;
             background-position: center;
             z-index: 0;
@@ -64,43 +63,21 @@
             white-space: pre-wrap;
             word-break: break-word;
             margin: 5px 0;
-        }
-
-        #tweet-text, #tweet-date {
-            font-weight: 600;
-        }
-
-        #tweet-text,
-        #tweet-user {
-            display: block;
-        }
-
-        #tweet-user {
-            margin-top: 6px;
-        }
-
-        #tweet-display-name {
-            font-weight: 600;
-        }
-        #tweet-username, #tweet-date {
-            color: gray;
+            font-weight: 400;
         }
 
         /* 768x320 */
         @media (width: 768px) and (height: 320px) {
             #tweet-container {
-                top: 22%;
-                left: 2.5%;
+                top: 38%;
+                left: 7%;
 
-                width: 350px;
-                height: 145px;
+                width: 320px;
+                height: 80px;
 
-                background-color: white;
+                /*background-color: rgba(255, 128, 0, .5);*/
                 color: black;
                 padding: 5px 10px;
-
-                box-shadow:
-                    inset -8px -8px 10px -8px rgba(0,0,0,.35);
             }
 
             #tweet-profile-container {
@@ -169,21 +146,7 @@
 
     <div id="tweet-container">
         <div id="tweet-content">
-            <div id="tweet-profile-container">
-                <img id="tweet-user-profile" />
-
-                <div id="tweet-profile-names">
-                    <div>
-                        <span id="tweet-display-name"></span>
-                        <img id="tweet-user-verified" />
-                    </div>
-                    <span id="tweet-username"></span>
-                </div>
-            </div>
-
             <span id="tweet-text"></span>
-
-            <span id="tweet-date"></span>
         </div>
     </div>
 
@@ -239,11 +202,6 @@ window.addEventListener('resize', fitTweetText);
 const params = new URLSearchParams(window.location.search);
 const DISPLAY_CODE = params.get("displayCode")
 const tweetTextEl = document.getElementById("tweet-text")
-const tweetProfilePicEl = document.getElementById("tweet-user-profile")
-const tweetDisplayNameEl = document.getElementById("tweet-display-name")
-const tweetUsernameEl = document.getElementById("tweet-username")
-const tweetDateEl = document.getElementById("tweet-date")
-const tweetVerifiedEl = document.getElementById("tweet-user-verified")
 
 function isNotExpired(dateStr) {
     const [day, month, year] = dateStr.split('/').map(Number);
@@ -298,8 +256,8 @@ function chooseTweetToDisplay(filteredArr) {
 
 async function loadTweets() {
     try {
-      const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
-      // const response = await fetch(`http://localhost:7777/`); // dev
+      // const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
+      const response = await fetch(`http://localhost:7777/`); // dev
       const { data: rawData } = await response.json();
       
       const data = filterDisplayData(rawData)
@@ -309,18 +267,6 @@ async function loadTweets() {
       console.log(tweetToDisplay)
 
       tweetTextEl.innerText = tweetToDisplay["Texto"]
-      tweetProfilePicEl.src = tweetToDisplay["Url Foto de Perfil Usuario"]
-      tweetDisplayNameEl.innerText = tweetToDisplay["Publicado por"]
-      tweetUsernameEl.innerText = `@${tweetToDisplay["Nombre de Usuario"]}`
-      tweetDateEl.innerText = tweetToDisplay["Fecha de Publicación"]
-      tweetVerifiedEl.src = 
-        tweetToDisplay["Perfil verificado"] === 1
-        || tweetToDisplay["Perfil verificado"] === "1"
-        || tweetToDisplay["Perfil verificado"] === "true"
-        || tweetToDisplay["Perfil verificado"] === "TRUE"
-        || tweetToDisplay["Perfil verificado"] === true
-        ? './img/v-icon.png'
-        : ''
       
       requestAnimationFrame(() => {
         fitTweetText();
