@@ -256,8 +256,8 @@ function chooseTweetToDisplay(filteredArr) {
 
 async function loadTweets() {
     try {
-      // const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
-      const response = await fetch(`http://localhost:7777/`); // dev
+      const response = await fetch(`https://pilsener-tweet-server-production.up.railway.app/`); // prod
+      // const response = await fetch(`http://localhost:7777/`); // dev
       const { data: rawData } = await response.json();
       
       const data = filterDisplayData(rawData)
